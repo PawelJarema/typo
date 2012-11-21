@@ -6,6 +6,15 @@ describe Admin::ContentController do
   # Like it's a shared, need call everywhere
   shared_examples_for 'index action' do
 
+    describe 'merge_with' do
+      it 'merge_form should not be displayed when a non-admin in logged in' do
+         @user = User.new(:login => "regular_user", :password => "kkkkk", :email => "ru@gmail.com", :profile_id => 2)
+         request.session = { :user => @user }
+         get :edit, id: 1
+         response.should_not render_template(:partial => '_merge_with')
+      end
+    end
+
     it 'should render template index' do
       get 'index'
       response.should render_template('index')
@@ -48,7 +57,7 @@ describe Admin::ContentController do
       response.should render_template('index')
       response.should be_success
     end
-    
+
     it 'should restrict to withdrawn articles' do
       article = Factory(:article, :state => 'withdrawn', :published_at => '2010-01-01')
       get :index, :search => {:state => 'withdrawn'}
@@ -56,7 +65,7 @@ describe Admin::ContentController do
       response.should render_template('index')
       response.should be_success
     end
-  
+
     it 'should restrict to withdrawn articles' do
       article = Factory(:article, :state => 'withdrawn', :published_at => '2010-01-01')
       get :index, :search => {:state => 'withdrawn'}

@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe ArticlesController do
   describe "routing" do
+    it "should route Merge request with right controller action" do
+    { :post => "/admin/content/merge/:id" }.should route_to(:controller => "content", :action => "merge_with")
+    end
+
     it "recognizes and generates #index" do
       { :get => "/" }.should route_to(:controller => "articles", :action => "index")
     end
