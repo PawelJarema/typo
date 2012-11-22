@@ -1,5 +1,5 @@
 <h1>Merge Articles</h1>
-<%= form_tag %>
-  <%= number_field_tag "merge_with", nil, :name => "merge_with" %>
-  <%= submit_tag "Merge", :class => "Merge" %>
+<%= form_tag("/admin/content/merge_with?main_id=#{@id}") %>
+  <%= number_field_tag "merge_with", nil, :in => 1..Article.all.count, :name => "merge_with", :id => 1 %>
+  <%= submit_tag "Merge", :class => "Merge", :name =>"id[#{@id}]" %>
 

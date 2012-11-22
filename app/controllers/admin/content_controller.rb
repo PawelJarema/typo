@@ -35,11 +35,13 @@ class Admin::ContentController < Admin::BaseController
       return
     end
     @admin = true if (current_user.profile_id == 1)
+    @id = params[:id]
     new_or_edit
   end
 
   def merge_with
-    @article = Article.find(params[:id]).merge_with(Article.find(params[:merge_with_id]))
+    @article = Article.find(params[:main_id])
+    @article.merge_with(Article.find(params[:merge_with]))
     if (@article.save) then
       flash[:messge] = "Articles id.#{params[:id]} and #{params[:merge_with_id]} merged successfuly."
       redirect_to :action => 'index'

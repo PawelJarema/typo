@@ -3,17 +3,44 @@
 describe Admin::ContentController do
   render_views
 
-  # Like it's a shared, need call everywhere
-  shared_examples_for 'index action' do
-
     describe 'merge_with' do
-      it 'merge_form should not be displayed when a non-admin in logged in' do
-         @user = User.new(:login => "regular_user", :password => "kkkkk", :email => "ru@gmail.com", :profile_id => 2)
-         request.session = { :user => @user }
-         get :edit, id: 1
+      before(:each) do
+         Factory(:blog)
+         @admin = Factory(:user, :profile => Factory(:profile_admin, :label => Profile::ADMIN))
+         @user = Factory(:user, :profile => Factory(:profile_admin, :label => "nonadmin"))
+         @user.profile_id = 2
+         Article.create(:title => "article1", :body => "body1")
+         Article.create(:title => "article2", :body => "body2")
+
+      end
+
+      def test_view_of_merge_with_form(user)
+        @user = user
+        request.session = { :user => @user }
+        get :edit, id: 1
+      end
+
+      it '(merge_form)should not be displayed when a non-admin in logged in' do
+         test_view_of_merge_with_form(@user)
          response.should_not render_template(:partial => '_merge_with')
       end
+      it 'should be displayed if admin is logged in' do
+         test_view_of_merge_with_form(@admin)
+         response.should render_template(:partial => '_merge_with')
+      end
+
+      def do_merge_with
+        post :merge_with, :main_id => 1, :merge_with => 2
+      end
+
+      it 'should redirect' do
+        do_merge_with
+        response.should be_redirect
+      end
     end
+
+  # Like it's a shared, need call everywhere
+  shared_examples_for 'index action' do
 
     it 'should render template index' do
       get 'index'
