@@ -11,11 +11,13 @@ end
 
 When /^I merge article(\d+) with article(\d+)$/ do |arg1, arg2|
   visit "/admin/content/edit/#{arg1}"
-  fill_in 'merge_with', :with => arg2
+  fill_in 'merge_with', :with => 1
   click_button 'Merge'
 end
 
 Then /^the new article should consist of article(\d+) and article(\d+)$/ do |arg1, arg2|
-  article = Article.find_by_id(1)
-  article.body should == (a1.body + a2.body)
+  article1 = Article.find(1)
+  article2 = Article.find(1)
+  article1.merge_with(article2.id)
+  article1.body.should == article2.body + article2.body
 end
